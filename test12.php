@@ -1,7 +1,15 @@
 <?php
+/* 
+著作者:だいすけだいすけ
+最終更新日:2016年3月17日(JPN)
+著作協力者
 
+
+
+
+2016 だいすけだいすけ(だいこん)
+ */
 namespace test12;
-//Not Event
 
 use pocketmine\Server;
 use pocketmine\plugin\PluginBase;
@@ -38,9 +46,6 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\InstantEffect;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\AxisAlignedBB;
-
-//Event
-
 use pocketmine\event\Listener;
 
 use pocketmine\event\block\BlockBreakEvent;
@@ -69,11 +74,75 @@ class test12 extends PluginBase implements Listener{
 
 public function onEnable(){
 $this->getServer() -> getPluginManager() -> registerEvents($this, $this);
+$adad=0;
 if(!file_exists($this->getDataFolder())){//configファイルを入れるフォルダがあるかを確認
     @mkdir($this->getDataFolder(), 0744, true);//なければフォルダを作成
 $this->saveDefaultConfig();//resourcesにあるconfig.ymlファイルをデータフォルダに入れて保存
 }
 $this->reloadConfig();//作成されたファイルを再読み込み
 $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
+
+
+$name1 = array("1","2","3","4","5",);
+$name = array("1","2","3","4","5","6","7","8","9","10",);
 }
 }
+
+
+public function onEntityDamageByEntity(EntityDamageEvent $event){
+if(Server::getInstance()->isLevelLoaded("逃走中")){//レベルオブジェクトかを条件分岐
+    $levelab = Server::getInstance()->getLevelByName("逃走中");//Levelオブジェクトの取得
+}
+        if($event instanceof EntityDamageByEntityEvent){//EntityDamageByEntityイベントかを確認
+$player = $event->getPlayer();
+                $damager = $event->getDamager(); //殴った人                
+　　　　　　　　$players = $event->getEntity();//殴られた人
+                               $levels = $players->getLevel();
+                if($players instanceof Player and $damager instanceof Player&&$levels==$levelab){//error出そうな気がする…
+$vector = new Position(62,6,242, $levels);//座標を指定
+                      $pos = new Position(62, 6,242, $levels);//座標を指定
+//通達処理
+if(new Config($this->getDataFolder() . "config.json", Config::JSON)->get($player->getName())==true){
+$players->teleport($pos);
+$players->setSpawn($vector);//スポーンをセット
+//エフェクト付与
+$players->addEffect(Effect::getEffect(10)->setDuration(5*20)->setAmplifier(10)->setVisible(false));
+
+$damager->sendMessage("[§4逃走中§r][個人メッセージ][逃走者]".$players->getName()."を捕まえました");
+$players->sendMessage("[§4逃走中§r][個人メッセージ][ハンター]".$damager->getName()."に捕まりました");
+$this->broadcast("[§4逃走中§r][通達][ハンター]".$damager->getName()."が[逃走者]".$players->getName()."を捕まえました");
+}
+}
+}
+}//ok
+
+public function onJoin(PlayerJoinEvent $event){
+//追記予定
+new Config($this->getDataFolder() . "config.json", Config::JSON)->set($event->getPlayer()->getName(), "false");//値と名前を設定
+}
+
+
+public function onBlockTap(PlayerInteractEvent $event){
+$player = $event->getPlayer();
+$level = $player->getLevel();
+$block = $event->getBlock();
+if($block->getID()==87){
+$player->sendMessage("処理中です……");
+
+
+$e = 10;//最大人数
+for($i=$e; $i<=$e;$i++){
+if(!$name[$i] instanceof Player&&$adad<$e||!$player->getName()==$name1||!$player->getName()==$name){
+$name[$i] = $player->getName();
+$adad++;
+$player->sendMessage("逃走者に参加しました");
+}else{
+$player->sendMessage("参加できないようです(エラーコード1)");
+}
+}
+
+
+
+}
+}
+

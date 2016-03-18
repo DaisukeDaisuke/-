@@ -85,6 +85,9 @@ $this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
 
 $name1 = array("1","2","3","4","5",);
 $name = array("1","2","3","4","5","6","7","8","9","10",);
+
+
+$abc=0;
 }
 }
 
@@ -131,7 +134,7 @@ $player->sendMessage("処理中です……");
 
 
 $e = 10;//最大人数
-for($i=$e; $i<=$e;$i++){
+for($i=0; $i<=$e;$i++){
 if(!$name[$i] instanceof Player&&$adad<$e||!$player->getName()==$name1||!$player->getName()==$name){
 $name[$i] = $player->getName();
 $adad++;
@@ -140,9 +143,94 @@ $player->sendMessage("逃走者に参加しました");
 $player->sendMessage("参加できないようです(エラーコード1)");
 }
 }
+$e1=10;
+for($i=0; $i<=$e1;$i++){
+if($block->getID()==88){
+if(!$name1[$i] instanceof Player&&$abc<$k||!$player==$name1||!$player==$name){
+$name1[$i] = $player;
+$abc++;
+$player->sendMessage("ハンターに参加しました");
+}
+}
+}
 
+}
+
+
+public function Quit(PlayerQuitEvent $event){
+$player = $event->getPlayer();
+$this->getServer()->loadLevel("world");
+$vector = new Position(128,5,128,$this->getServer()->getDefaultLevel());//座標を指定
+$pos = new Position(128,5,128,$this->getServer()->getDefaultLevel());//座標を指定
+$players->teleport($pos);
+$players->setSpawn($vector);
+for($i6=0; $i6<=10; $i6++){
+if($name[$i6]==$player){
+$name[$i6] = $i6;
+$adad--;
+}
+}
+//10まで
+//5まで
+for($i7=0; $i7<=5; $i7++){
+if($name1[$i7]==$player){
+$name1[$i7] = $i7;
+$abc--;
+}
+}
+}
+
+class time extends PluginTask{//PluginTaskを継承したクラスです。phpファイルを分けてもできます
+   public function __construct(PluginBase $owner, Player $player) {
+      parent::__construct($owner);
+      $this->player = $player;//Playerデータを引き継ぎます
+   }
+}
+
+
+public function onRun($currentTick){
+$ops = $op;
+$xyz = false;
+if($xyz==false){
+$xyz = true;
+$pq = 60;
+} 
+if(!$pq==0){
+$pq--;
+}
+if($ops==false){
+$this->getServer()->broadcastPopup("逃走中開始まであと"$pq"秒だｿ!");
+}
+if($ops==true){
+$this->getServer()->broadcastPopup("逃走中終了まであと"$pq"秒だｿ!");
+}
+
+if($pq==0&&$op==true){
+$ops = false;//終わったとき
+$pq = 260;
+$this->getServer()->broadcastPopup("逃走中が始まったｿﾞ! \n error コメントを表示できませんでした。\nそれらはいつか治ります");
+for($i1=0; $i1<=10; $i1++){
+$namename=$name[$i1]->getName();
+new Config($this->getDataFolder() . "config.json", Config::JSON)->set($namename, "false");
+}
+}
+if($pq==0&&$op==false){
+$ops =true;//始まったとき
+$pq = 60;
+$this->getServer()->broadcastPopup("逃走中が終わったｿﾞ! \n error コメントを表示できませんでした。\nそれらはいつか治ります");
+for($i2=10; $i2<=10; $i2++){
+$name11=$name[$i2]->getName();
+new Config($this->getDataFolder() . "config.json", Config::JSON)->set($name11, "true");
+}
+if(Server::getInstance()->isLevelLoaded("逃走中")){//レベルオブジェクトかを条件分岐
+    $level = Server::getInstance()->getLevelByName("逃走中");//Levelオブジェクトの取得
+}
+for($i3=0;$i3<=$k; $i3++){//k=5
+if(!$name1[$i3] instanceof Player||!$player==$name1||!$player==$name){
+$pos = new Position(x座標, y座標, z座標,$Level);//まだ決まってません
+$name1[$i3]->teleport($pos);
 
 
 }
-}
+
 

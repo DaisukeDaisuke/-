@@ -123,9 +123,8 @@ $this->broadcast("[§4逃走中§r][通達][ハンター]".$damager->getName()."
 
 public function onJoin(PlayerJoinEvent $event){
 //追記予定
-new Config($this->getDataFolder() . "config.json", Config::JSON)->set($event->getPlayer()->getName(), "false");//値と名前を設定
+new Config($this->getDataFolder() . "config.json", Config::JSON)->set($event->getPlayer()->getName(), "false");
 
-//プレイヤーログアウトイベントより
 $players = $event->getPlayer();
 $this->getServer()->loadLevel("world");
 $vector = new Position(128,5,128,$this->getServer()->getDefaultLevel());//座標を指定
@@ -154,7 +153,7 @@ $player->sendMessage("逃走者に参加しました");
 $player->sendMessage("参加できないようです(エラーコード1)");
 }
 }
-if($block->getID()==88){//間違っていたw
+if($block->getID()==88){
 $e1=10;
 for($i=0; $i<=$e1;$i++){
 if(!$name1[$i] instanceof Player&&$abc<$k||!$player==$name1||!$player==$name){
@@ -186,7 +185,7 @@ $abc--;
 
 }
 
-class time extends PluginTask
+class time extends PluginTask{//消しすぎてましたw
    public function __construct(PluginBase $owner, Player $player) {
       parent::__construct($owner);
       $this->player = $player;
@@ -195,11 +194,12 @@ class time extends PluginTask
 
 
 public function onRun($currentTick){
-$Prize = 9900;//賞金
+$Prize = 100;//1秒辺りの賞金、後でコンフィグからできるようにしよう。
 $ops = $op;
 if($xyz==false){
 $xyz = true;
 $pq = 60;
+$Prize1=0;//賞金情報保持
 } 
 if(!$pq==0){
 $pq--;
@@ -208,14 +208,16 @@ if($ops==false){
 $this->getServer()->broadcastPopup("逃走中開始まであと"$pq"秒だｿ!");
 }
 if($ops==true){
-$this->getServer()->broadcastPopup("逃走中終了まであと"$pq"秒だｿ!");
+$Prize1+$Prize=$Prize1;
+$this->getServer()->broadcastPopup("逃走中終了まであと"$pq"秒だｿ!/n
+賞金".$Prize1); 
 }
 
 if($pq==0&&$op==true){
 $ops = false;//終わったとき
 $pq = 260;
 $this->getServer()->broadcastPopup("逃走中が始まったｿﾞ! ");
-$this->getServer()->broadcastMessage("逃走中が始まりました\n賞金は".$Prize."です");//賞金は9900(予定)
+$this->getServer()->broadcastMessage("逃走中が始まりました\n賞金は".$Prize."です");//賞金は26000(予定)
 for($i1=0; $i1<=10; $i1++){
 $namename=$name[$i1]->getName();
 new Config($this->getDataFolder() . "config.json", Config::JSON)->set($namename, "false");
@@ -231,8 +233,8 @@ for($i2=10; $i2<=10; $i2++){
 $name11=$name[$i2]->getName();
 new Config($this->getDataFolder() . "config.json", Config::JSON)->set($name11, "true");
 }
-if(Server::getInstance()->isLevelLoaded("逃走中")){//レベルオブジェクトかを条件分岐
-    $level = Server::getInstance()->getLevelByName("逃走中");//Levelオブジェクトの取得
+if(Server::getInstance()->isLevelLoaded("逃走中")){
+    $level = Server::getInstance()->getLevelByName("逃走中");
 }else{
 $this->getServer()->broadcastPopup("errorです2");
 }

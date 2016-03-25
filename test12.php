@@ -1,7 +1,7 @@
 <?php
 /* 
 著作者:だいすけだいすけ
-最終更新日:2016年3月17日(JPN)
+最終更新日:2016年3月19日(JPN)
 著作協力者
 
 
@@ -73,6 +73,7 @@ use pocketmine\event\player\PlayerCommandPreprocessEvent;
 class test12 extends PluginBase implements Listener{
 
 public function onEnable(){
+$xyz = false;
 $this->getServer() -> getPluginManager() -> registerEvents($this, $this);
 $adad=0;
 if(!file_exists($this->getDataFolder())){//configファイルを入れるフォルダがあるかを確認
@@ -119,10 +120,21 @@ $this->broadcast("[§4逃走中§r][通達][ハンター]".$damager->getName()."
 }
 }//ok
 
+
 public function onJoin(PlayerJoinEvent $event){
 //追記予定
 new Config($this->getDataFolder() . "config.json", Config::JSON)->set($event->getPlayer()->getName(), "false");//値と名前を設定
+
+//プレイヤーログアウトイベントより
+$players = $event->getPlayer();
+$this->getServer()->loadLevel("world");
+$vector = new Position(128,5,128,$this->getServer()->getDefaultLevel());//座標を指定
+$pos = new Position(128,5,128,$this->getServer()->getDefaultLevel());//座標を指定
+$players->teleport($pos);
+$players->setSpawn($vector);
+
 }
+
 
 
 public function onBlockTap(PlayerInteractEvent $event){
@@ -131,7 +143,6 @@ $level = $player->getLevel();
 $block = $event->getBlock();
 if($block->getID()==87){
 $player->sendMessage("処理中です……");
-
 
 $e = 10;//最大人数
 for($i=0; $i<=$e;$i++){
@@ -143,9 +154,9 @@ $player->sendMessage("逃走者に参加しました");
 $player->sendMessage("参加できないようです(エラーコード1)");
 }
 }
+if($block->getID()==88){//間違っていたw
 $e1=10;
 for($i=0; $i<=$e1;$i++){
-if($block->getID()==88){
 if(!$name1[$i] instanceof Player&&$abc<$k||!$player==$name1||!$player==$name){
 $name1[$i] = $player;
 $abc++;
@@ -159,38 +170,33 @@ $player->sendMessage("ハンターに参加しました");
 
 public function Quit(PlayerQuitEvent $event){
 $player = $event->getPlayer();
-$this->getServer()->loadLevel("world");
-$vector = new Position(128,5,128,$this->getServer()->getDefaultLevel());//座標を指定
-$pos = new Position(128,5,128,$this->getServer()->getDefaultLevel());//座標を指定
-$players->teleport($pos);
-$players->setSpawn($vector);
 for($i6=0; $i6<=10; $i6++){
-if($name[$i6]==$player){
+if($name[$i6]==$player->getName()){
 $name[$i6] = $i6;
 $adad--;
 }
 }
-//10まで
 //5まで
 for($i7=0; $i7<=5; $i7++){
-if($name1[$i7]==$player){
+if($name1[$i7]==$player->getName()){
 $name1[$i7] = $i7;
 $abc--;
 }
 }
+
 }
 
-class time extends PluginTask{//PluginTaskを継承したクラスです。phpファイルを分けてもできます
+class time extends PluginTask
    public function __construct(PluginBase $owner, Player $player) {
       parent::__construct($owner);
-      $this->player = $player;//Playerデータを引き継ぎます
+      $this->player = $player;
    }
 }
 
 
 public function onRun($currentTick){
+$Prize = 9900;//賞金
 $ops = $op;
-$xyz = false;
 if($xyz==false){
 $xyz = true;
 $pq = 60;
@@ -208,7 +214,8 @@ $this->getServer()->broadcastPopup("逃走中終了まであと"$pq"秒だｿ!")
 if($pq==0&&$op==true){
 $ops = false;//終わったとき
 $pq = 260;
-$this->getServer()->broadcastPopup("逃走中が始まったｿﾞ! \n error コメントを表示できませんでした。\nそれらはいつか治ります");
+$this->getServer()->broadcastPopup("逃走中が始まったｿﾞ! ");
+$this->getServer()->broadcastMessage("逃走中が始まりました\n賞金は".$Prize."です");//賞金は9900(予定)
 for($i1=0; $i1<=10; $i1++){
 $namename=$name[$i1]->getName();
 new Config($this->getDataFolder() . "config.json", Config::JSON)->set($namename, "false");
@@ -217,20 +224,27 @@ new Config($this->getDataFolder() . "config.json", Config::JSON)->set($namename,
 if($pq==0&&$op==false){
 $ops =true;//始まったとき
 $pq = 60;
-$this->getServer()->broadcastPopup("逃走中が終わったｿﾞ! \n error コメントを表示できませんでした。\nそれらはいつか治ります");
+$this->getServer()->broadcastPopup("逃走中が終わったｿﾞ! ");//ここ後で直す
+$this->getServer()->broadcastMessage("逃走中が終わりました\n
+賞金獲得者は". ."です");//獲得者の配列はまたあとで 
 for($i2=10; $i2<=10; $i2++){
 $name11=$name[$i2]->getName();
 new Config($this->getDataFolder() . "config.json", Config::JSON)->set($name11, "true");
 }
 if(Server::getInstance()->isLevelLoaded("逃走中")){//レベルオブジェクトかを条件分岐
     $level = Server::getInstance()->getLevelByName("逃走中");//Levelオブジェクトの取得
+}else{
+$this->getServer()->broadcastPopup("errorです2");
 }
 for($i3=0;$i3<=$k; $i3++){//k=5
-if(!$name1[$i3] instanceof Player||!$player==$name1||!$player==$name){
+if(!$name1[$i3] instanceof Player){
+try{
 $pos = new Position(x座標, y座標, z座標,$Level);//まだ決まってません
 $name1[$i3]->teleport($pos);
-
-
+}catch(Exception $e1){
+$this->getServer()->broadcastPopup("§4逃走中を実行中に正常に実行できませんでした!!");
+$this->getServer()->broadcastMessage("§4逃走中を実行中に正常に実行できませんでした!!");
+$this->getServer()->broadcastMessage("errorです。サーバークラッシュを回避しました");
 }
-
-
+}
+}

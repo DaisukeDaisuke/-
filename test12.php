@@ -1,7 +1,7 @@
 <?php
 /* 
 著作者:だいすけだいすけ
-最終更新日:2016年3月25日(JPN)
+最終更新日:2016年4月3日(JPN)
 著作協力者
 
 
@@ -156,7 +156,7 @@ $player->sendMessage("参加できないようです(エラーコード1)");
 if($block->getID()==88){
 $e1=10;
 for($i=0; $i<=$e1;$i++){
-if(!$name1[$i] instanceof Player&&$abc<$k||!$player==$name1||!$player==$name){
+if(!$name1[$i] instanceof Player&&$abc<$e1||!$player==$name1||!$player==$name){
 $name1[$i] = $player;
 $abc++;
 $player->sendMessage("ハンターに参加しました");
@@ -185,7 +185,7 @@ $abc--;
 
 }
 
-class time extends PluginTask{//消しすぎてましたw
+class time extends PluginTask{
    public function __construct(PluginBase $owner, Player $player) {
       parent::__construct($owner);
       $this->player = $player;
@@ -216,6 +216,11 @@ $this->getServer()->broadcastPopup("逃走中終了まであと"$pq"秒だｿ!/n
 if($pq==0&&$op==true){
 $ops = false;//終わったとき
 $pq = 260;
+if(Server::getInstance()->isLevelLoaded("逃走中")){
+    $level = Server::getInstance()->getLevelByName("逃走中");
+}else{
+$this->getServer()->broadcastPopup("errorです2");
+}
 $this->getServer()->broadcastPopup("逃走中が始まったｿﾞ! ");
 $this->getServer()->broadcastMessage("逃走中が始まりました\n賞金は".$Prize."です");//賞金は26000(予定)
 for($i1=0; $i1<=10; $i1++){
@@ -233,15 +238,13 @@ for($i2=10; $i2<=10; $i2++){
 $name11=$name[$i2]->getName();
 new Config($this->getDataFolder() . "config.json", Config::JSON)->set($name11, "true");
 }
-if(Server::getInstance()->isLevelLoaded("逃走中")){
-    $level = Server::getInstance()->getLevelByName("逃走中");
-}else{
-$this->getServer()->broadcastPopup("errorです2");
+if(Server::getInstance()->isLevelLoaded("world")){//レベルオブジェクトかを条件分岐
+    $level = Server::getInstance()->getLevelByName("world");//Levelオブジェクトの取得
 }
 for($i3=0;$i3<=$k; $i3++){//k=5
 if(!$name1[$i3] instanceof Player){
 try{
-$pos = new Position(x座標, y座標, z座標,$Level);//まだ決まってません
+$pos = new Position(127,5,128,$Level);//まだ決まってません
 $name1[$i3]->teleport($pos);
 }catch(Exception $e1){
 $this->getServer()->broadcastPopup("§4逃走中を実行中に正常に実行できませんでした!!");

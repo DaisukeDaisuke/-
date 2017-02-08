@@ -1,7 +1,7 @@
 <?php
 /* 
 著作者:だいすけだいすけ
-最終更新日:2016年4月3日(JPN)
+最終更新日:2017年2月9日(JPN)
 著作協力者
 
 
@@ -32,18 +32,7 @@ use pocketmine\level\format\FullChunk;
 use pocketmine\level\format\mcregion\Chunk;
 use pocketmine\scheduler\PluginTask;
 use pocketmine\scheduler\CallbackTask;
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\Byte;
-use pocketmine\nbt\tag\Compound;
-use pocketmine\nbt\tag\Double;
-use pocketmine\nbt\tag\Enum;
-use pocketmine\nbt\tag\Float;
-use pocketmine\nbt\tag\Int;
-use pocketmine\nbt\tag\String;
-use pocketmine\utils\TextFormat;
-use pocketmine\utils\MainLogger;
 use pocketmine\entity\Effect;
-use pocketmine\entity\InstantEffect;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\event\Listener;
@@ -60,131 +49,154 @@ use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\server\ServerCommandEvent;
-use pocketmine\event\server\RemoteServerCommandEvent;
 use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
-use pocketmine\event\player\PlayerItemHeldEvent;
-use pocketmine\event\entity\ProjectileLaunchEvent;
-use pocketmine\event\entity\EntityDespawnEvent; 
-use pocketmine\event\player\PlayerCommandPreprocessEvent;
+use pocketmine\event\entity\EntityDespawnEvent;
 
 class test12 extends PluginBase implements Listener{
-
+/*
+public $adad = 0;
+public $date = [];
+public $abc = 0;
+public $name1 = array();//ハンター
+public $name = array();//逃走者
+public $xyz = false;
+*/
+public $gamedate = [];
 public function onEnable(){
-$xyz = false;
-$this->getServer() -> getPluginManager() -> registerEvents($this, $this);
-$adad=0;
-if(!file_exists($this->getDataFolder())){//configファイルを入れるフォルダがあるかを確認
-    @mkdir($this->getDataFolder(), 0744, true);//なければフォルダを作成
-$this->saveDefaultConfig();//resourcesにあるconfig.ymlファイルをデータフォルダに入れて保存
+	$this->getServer()->loadLevel("world");
+	$this->getServer()->getPluginManager()->registerEvents($this, $this);
+	if(!file_exists($this->getDataFolder())){//configファイルを入れるフォルダがあるかを確認
+		mkdir($this->getDataFolder(), 0744, true);//なければフォルダを作成
+		$this->saveDefaultConfig();//resourcesにあるconfig.ymlファイルをデータフォルダに入れて保存
+	}
+	$this->reloadConfig();//作成されたファイルを再読み込み
+	$this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
+	$this->gamedate["prize"]=0;//賞金
+	$this->gamedate["players"]=[];
+	$this->gamedate["escapee"]=[];//逃走者
+	$this->gamedate["demon"]=[];//鬼 
+	
+	$this->gamedate["type"]="false";
+	
+	
+	$this->gamedate["escapeecount"]=0;
+	$this->gamedate["demoncount"]=0;
+
 }
-$this->reloadConfig();//作成されたファイルを再読み込み
-$this->config = new Config($this->getDataFolder() . "config.yml", Config::YAML);
 
-
-$name1 = array("1","2","3","4","5",);
-$name = array("1","2","3","4","5","6","7","8","9","10",);
-
-
-$abc=0;
-}
-}
-
-
+//修正しなくちゃ
 public function onEntityDamageByEntity(EntityDamageEvent $event){
-if(Server::getInstance()->isLevelLoaded("逃走中")){//レベルオブジェクトかを条件分岐
-    $levelab = Server::getInstance()->getLevelByName("逃走中");//Levelオブジェクトの取得
-}
-        if($event instanceof EntityDamageByEntityEvent){//EntityDamageByEntityイベントかを確認
-$player = $event->getPlayer();
-                $damager = $event->getDamager(); //殴った人                
-　　　　　　　　$players = $event->getEntity();//殴られた人
-                               $levels = $players->getLevel();
-                if($players instanceof Player and $damager instanceof Player&&$levels==$levelab){//error出そうな気がする…
-$vector = new Position(62,6,242, $levels);//座標を指定
-                      $pos = new Position(62, 6,242, $levels);//座標を指定
-//通達処理
-if(new Config($this->getDataFolder() . "config.json", Config::JSON)->get($player->getName())==true){
-$players->teleport($pos);
-$players->setSpawn($vector);//スポーンをセット
-//エフェクト付与
-$players->addEffect(Effect::getEffect(10)->setDuration(5*20)->setAmplifier(10)->setVisible(false));
-
-$damager->sendMessage("[§4逃走中§r][個人メッセージ][逃走者]".$players->getName()."を捕まえました");
-$players->sendMessage("[§4逃走中§r][個人メッセージ][ハンター]".$damager->getName()."に捕まりました");
-$this->broadcast("[§4逃走中§r][通達][ハンター]".$damager->getName()."が[逃走者]".$players->getName()."を捕まえました");
-}
-}
-}
-}//ok
-
-
-public function onJoin(PlayerJoinEvent $event){
-//追記予定
-new Config($this->getDataFolder() . "config.json", Config::JSON)->set($event->getPlayer()->getName(), "false");
-
-$players = $event->getPlayer();
-$this->getServer()->loadLevel("world");
-$vector = new Position(128,5,128,$this->getServer()->getDefaultLevel());//座標を指定
-$pos = new Position(128,5,128,$this->getServer()->getDefaultLevel());//座標を指定
-$players->teleport($pos);
-$players->setSpawn($vector);
-
-}
-
-
-
-public function onBlockTap(PlayerInteractEvent $event){
-$player = $event->getPlayer();
-$level = $player->getLevel();
-$block = $event->getBlock();
-if($block->getID()==87){
-$player->sendMessage("処理中です……");
-
-$e = 10;//最大人数
-for($i=0; $i<=$e;$i++){
-if(!$name[$i] instanceof Player&&$adad<$e||!$player->getName()==$name1||!$player->getName()==$name){
-$name[$i] = $player->getName();
-$adad++;
-$player->sendMessage("逃走者に参加しました");
-}else{
-$player->sendMessage("参加できないようです(エラーコード1)");
-}
-}
-if($block->getID()==88){
-$e1=10;
-for($i=0; $i<=$e1;$i++){
-if(!$name1[$i] instanceof Player&&$abc<$e1||!$player==$name1||!$player==$name){
-$name1[$i] = $player;
-$abc++;
-$player->sendMessage("ハンターに参加しました");
-}
-}
-}
-
-}
+	$levelab = "null";
+	if(Server::getInstance()->isLevelLoaded("逃走中")){//レベルオブジェクトかを条件分岐
+		$levelab = Server::getInstance()->getLevelByName("逃走中");//Levelオブジェクトの取得
+		
+	}else 
+	$this->getLogger()->info("エラーです。");
+	if($event instanceof EntityDamageByEntityEvent){//EntityDamageByEntityイベントかを確認
+		$player = $event->getPlayer();
+		$damager = $event->getDamager(); //殴った人                
+		$players = $event->getEntity();//殴られた人
+		$levels = $players->getLevel();
+			if($players instanceof Player and $damager instanceof Player&&$levels->getName()===$levelab->getName()){
+			//error出そうな気がする…
+				$vector = new Position(62,6,242, $levels);//座標を指定
+				$pos = new Position(62, 6,242, $levels);//座標を指定
+				//通達処理
+				if($this->gamedate["players"][$player->getName()] == true){
+					$players->teleport($pos);
+					$players->setSpawn($vector);//スポーンをセット
+					//エフェクト付与
+					$players->addEffect(Effect::getEffect(10)->setDuration(5*20)->setAmplifier(10)->setVisible(false));
+			$damager->sendMessage("[§4逃走中§r][個人メッセージ][逃走者]".$players->getName()."を捕まえました");
+			$players->sendMessage("[§4逃走中§r][個人メッセージ][ハンター]".$damager->getName()."に捕まりました");
+$this->getServer()->broadcastMessage("[§4逃走中§r][通達][ハンター]".$damager->getName()."が[逃走者]".$players->getName()."を捕まえました");
+				}
+			}
+		}
+	}//ok
+	
+	
+	public $vector = new Position(128,5,128,$this->getServer()->getDefaultLevel());
+	public $pos = new Position(128,5,128,$this->getServer()->getDefaultLevel());//軽量化の為だからね//////
+	public function onJoin(PlayerJoinEvent $event){
+		//new Config($this->getDataFolder() . "config.json", Config::JSON)->set($event->getPlayer()->getName(), "false");
+		$player = $event->getPlayer();
+		$this->gamedate["players"][$player->getName()] = "false";
+		$player->teleport($this->pos);
+		$player->setSpawn($this->vector);
+	}
 
 
-public function Quit(PlayerQuitEvent $event){
-$player = $event->getPlayer();
-for($i6=0; $i6<=10; $i6++){
-if($name[$i6]==$player->getName()){
-$name[$i6] = $i6;
-$adad--;
-}
-}
-//5まで
-for($i7=0; $i7<=5; $i7++){
-if($name1[$i7]==$player->getName()){
-$name1[$i7] = $i7;
-$abc--;
-}
-}
 
-}
+	public function onBlockTap(PlayerInteractEvent $event){
+		$player = $event->getPlayer();
+		$level = $player->getLevel();
+		$block = $event->getBlock();
+		if($block->getID()==87){
+			$this->escapee($player->getName());
+		}
+		if($block->getID()==88){
+			$this->demon($player->getName())
+		}
+		if($block->getID()==52){
+			$this->out($player->getName());
+		}
+	}
 
+
+	public function Quit(PlayerQuitEvent $event){
+		$player = $event->getPlayer();
+		$this->out($player->getName());
+		}
+
+
+	public function out($playername){
+		if($this->gamedate["players"][$playername]==true){
+			if(array_key_exists($playername,$this->gamedate["demon"])){
+				unset($this->gamedate["demon"][$playername]);
+				$this->gamedate = array_values($this->gamedate);//詰める(update!!)
+			}else if(array_key_exists($playername,$this->gamedate["escapee"])){
+				unset($this->gamedate["escapee"][$playername]);
+				$this->gamedate = array_values($this->gamedate);//詰める(update!!)
+			}else{
+				$player->sendMessage("不明なエラーが発生。この処理は正常に終了。\n開発者より:リログすることを強くお勧めします。");
+				$this->getLogger()->info("out()処理でエラー。処理は正常に終了。");
+			}
+		}else $player->sendMessage("参加してません。");
+	}
+	public function demon($playername){
+		$Maxp=10;
+		if($this->gamedate["demoncount"]>=$Maxp){
+			if($this->gamedate["players"][$playername]==false){
+				$this->gamedate["demon"][] = $playername;
+				$this->gamedate["players"][$playername]=true;
+				$this->gamedate["demoncount"] = $this->gamedate["demoncount"]+1;
+				$player->sendMessage("ハンターに参加しました");
+			}else
+			$player->sendMessage("参加できないようです(既にハンター又は逃走者に参加している)");
+		}else
+		$player->sendMessage("ハンターに参加できないようです(参加人数が最大)[".$this->gamedate["demoncount"] ."/".$Maxp."]");
+	}
+	public function escapee($playername){
+	//$player->sendMessage("処理中です……");
+				$Maxplayers = 10;//最大人数
+			//	for($i=0;count($this->gamedate["escapee"])<=$i;$i++){
+//if(!$this->gamedate["escapee"][$i]==""&&count($this->gamedate["escapee"])<=$Maxplayers){//??????
+	//if(!$playername==$this->gamedate["demon"]&&!$playername==$this->gamedate["escapee"]){
+		if($this->gamedate["escapeecount"]>=$Maxplayers){
+			if($this->gamedate["players"][$playername]==false){
+				$this->gamedate["escapee"][] = $playername;
+				$this->gamedate["players"][$playername]=true;
+				$this->gamedate["escapeecount"] = $this->gamedate["escapeecount"]+1;
+				$player->sendMessage("逃走者に参加しました");
+			}else
+			$player->sendMessage("参加できないようです(既にハンター又は逃走者に参加している)");
+		}else
+		$player->sendMessage("逃走者に参加できないようです(人数が限界)[".$this->gamedate["escapeecount"] ."/".$Maxplayers."]");
+	}
 class time extends PluginTask{
    public function __construct(PluginBase $owner, Player $player) {
       parent::__construct($owner);
